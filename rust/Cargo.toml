@@ -1,0 +1,18 @@
+[package]
+name = "buildingedge-bms"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+
+[lib]
+name = "buildingedge_bms"
+path = "src/lib.rs"
+
+[[bin]]
+name = "modbus-sim"
+path = "src/bin/modbus_sim.rs"
+
+[[bin]]
+name = "bms-collector"
+path = "src/bin/collector.rs"

@@ -1,0 +1,14 @@
+.git
+build
+rust/target
+*.zip
+output
+__pycache__
+.env
+HANDOFF.md
+PORTFOLIO_AUDIT.md
+docs/INTERVIEW.md
+docs/PORTFOLIO_AUDIT.md
+
+/.playwright-mcp/
+/.playwright-cli/

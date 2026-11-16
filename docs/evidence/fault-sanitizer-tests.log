@@ -1,0 +1,39 @@
+test_exception_recovers (__main__.GatewayFaults.test_exception_recovers) ... ok
+test_fragmented_tcp_response (__main__.GatewayFaults.test_fragmented_tcp_response) ... ok
+test_invalid_measurement_is_not_published (__main__.GatewayFaults.test_invalid_measurement_is_not_published) ... ok
+test_oversized_length_recovers (__main__.GatewayFaults.test_oversized_length_recovers) ... ok
+test_truncated_response_recovers (__main__.GatewayFaults.test_truncated_response_recovers) ... ok
+test_wrong_transaction_recovers (__main__.GatewayFaults.test_wrong_transaction_recovers) ... ok
+test_wrong_unit_recovers (__main__.GatewayFaults.test_wrong_unit_recovers) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 4.030s
+
+OK
+-- The CXX compiler identification is GNU 12.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /lab/build-asan
+[ 14%] Building CXX object CMakeFiles/bms_core.dir/cpp/src/net.cpp.o
+[ 28%] Building CXX object CMakeFiles/bms_core.dir/cpp/src/core.cpp.o
+[ 42%] Linking CXX static library libbms_core.a
+[ 42%] Built target bms_core
+[ 57%] Building CXX object CMakeFiles/bms-edge.dir/cpp/src/main.cpp.o
+[ 71%] Building CXX object CMakeFiles/bms-core-tests.dir/cpp/tests/test_core.cpp.o
+[ 85%] Linking CXX executable bms-core-tests
+[ 85%] Built target bms-core-tests
+[100%] Linking CXX executable bms-edge
+[100%] Built target bms-edge
+Internal ctest changing into directory: /lab/build-asan
+Test project /lab/build-asan
+    Start 1: bms-core-tests
+1/1 Test #1: bms-core-tests ...................   Passed    0.02 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.02 sec

@@ -1,0 +1,124 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.validation
+#1 transferring dockerfile:
+#1 transferring dockerfile: 746B 0.0s done
+#1 DONE 0.4s
+
+#2 [internal] load metadata for docker.io/library/rust:1.85-bookworm
+#2 DONE 22.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 33B
+#3 transferring context: 207B done
+#3 DONE 0.6s
+
+#4 [internal] load build context
+#4 DONE 0.0s
+
+#5 [ 1/10] FROM docker.io/library/rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4
+#5 resolve docker.io/library/rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4
+#5 resolve docker.io/library/rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 0.9s done
+#5 DONE 1.0s
+
+#4 [internal] load build context
+#4 transferring context: 90.11kB 0.0s done
+#4 DONE 0.5s
+
+#6 [ 2/10] RUN apt-get update && apt-get install -y --no-install-recommends cmake python3 && rm -rf /var/lib/apt/lists/*
+#6 CACHED
+
+#7 [ 3/10] WORKDIR /lab
+#7 CACHED
+
+#8 [ 4/10] COPY CMakeLists.txt ./
+#8 CACHED
+
+#9 [ 5/10] COPY cpp/ cpp/
+#9 CACHED
+
+#10 [ 6/10] COPY rust/ rust/
+#10 CACHED
+
+#11 [ 7/10] COPY web/ web/
+#11 DONE 2.6s
+
+#12 [ 8/10] COPY scripts/ scripts/
+#12 DONE 2.7s
+
+#13 [ 9/10] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON && cmake --build build --parallel 2
+#13 3.049 -- The CXX compiler identification is GNU 12.2.0
+#13 3.061 -- Detecting CXX compiler ABI info
+#13 3.193 -- Detecting CXX compiler ABI info - done
+#13 3.208 -- Check for working CXX compiler: /usr/bin/c++ - skipped
+#13 3.208 -- Detecting CXX compile features
+#13 3.209 -- Detecting CXX compile features - done
+#13 3.216 -- Configuring done
+#13 3.250 -- Generating done
+#13 3.253 -- Build files have been written to: /lab/build
+#13 3.313 [ 14%] Building CXX object CMakeFiles/bms_core.dir/cpp/src/core.cpp.o
+#13 3.313 [ 28%] Building CXX object CMakeFiles/bms_core.dir/cpp/src/net.cpp.o
+#13 3.948 [ 42%] Linking CXX static library libbms_core.a
+#13 3.991 [ 42%] Built target bms_core
+#13 4.015 [ 57%] Building CXX object CMakeFiles/bms-edge.dir/cpp/src/main.cpp.o
+#13 4.020 [ 71%] Building CXX object CMakeFiles/bms-core-tests.dir/cpp/tests/test_core.cpp.o
+#13 4.925 [ 85%] Linking CXX executable bms-core-tests
+#13 5.091 [ 85%] Built target bms-core-tests
+#13 5.302 [100%] Linking CXX executable bms-edge
+#13 5.461 [100%] Built target bms-edge
+#13 DONE 7.6s
+
+#14 [10/10] RUN cargo test --manifest-path rust/Cargo.toml --locked && cargo build --manifest-path rust/Cargo.toml --locked
+#14 3.184    Compiling buildingedge-bms v0.2.0 (/lab/rust)
+#14 4.296     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.62s
+#14 4.296      Running unittests src/lib.rs (rust/target/debug/deps/buildingedge_bms-09251655ef0cec59)
+#14 4.298
+#14 4.298 running 5 tests
+#14 4.299 test tests::modbus_contract ... ok
+#14 4.299 test tests::rejects_bad_frames ... ok
+#14 4.299 test operational_tests::connection_capacity_released_on_drop ... ok
+#14 4.299 test tests::parses_frame ... ok
+#14 4.299 test tests::ring_bounded_replay_rejected ... ok     Running unittests src/bin/collector.rs (rust/target/debug/deps/bms_collector-7c56a553abcafd83)
+#14 4.300
+#14 4.300
+#14 4.300 test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+#14 4.300
+#14 4.301
+#14 4.301 running 0 tests
+#14 4.302
+#14 4.302 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+#14 4.302
+#14 4.302      Running unittests src/bin/modbus_sim.rs (rust/target/debug/deps/modbus_sim-bf44e802139dac5d)
+#14 4.304
+#14 4.304 running 0 tests
+#14 4.304
+#14 4.304 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+#14 4.304
+#14 4.304    Doc-tests buildingedge_bms
+#14 4.348
+#14 4.348 running 0 tests
+#14 4.348
+#14 4.348 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+#14 4.348
+#14 4.374    Compiling buildingedge-bms v0.2.0 (/lab/rust)
+#14 5.410     Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.04s
+#14 DONE 9.7s
+
+#15 exporting to image
+#15 exporting layers
+#15 exporting layers 14.0s done
+#15 exporting manifest sha256:a4f1abea379847a0a63c30b49f9ca1ba487a20e732da7b33cd725c1a39f4187b
+#15 exporting manifest sha256:a4f1abea379847a0a63c30b49f9ca1ba487a20e732da7b33cd725c1a39f4187b 0.7s done
+#15 exporting config sha256:a7d6b04c57be94a229d679b5fe218509d3ed8a8decf82da56adb648ffcdc1eb8
+#15 exporting config sha256:a7d6b04c57be94a229d679b5fe218509d3ed8a8decf82da56adb648ffcdc1eb8 0.6s done
+#15 exporting attestation manifest sha256:0636e055e59d5d2b4834c918979f8ffeef56154eb0161387333f130b8d49a14e
+#15 exporting attestation manifest sha256:0636e055e59d5d2b4834c918979f8ffeef56154eb0161387333f130b8d49a14e 0.8s done
+#15 exporting manifest list sha256:85c8132e29e1475b0baca750a06f3f1fda79eb084571da64475dc68acf7ff938
+#15 exporting manifest list sha256:85c8132e29e1475b0baca750a06f3f1fda79eb084571da64475dc68acf7ff938 0.8s done
+#15 naming to docker.io/library/buildingedge-validation:0.2
+#15 naming to docker.io/library/buildingedge-validation:0.2 0.1s done
+#15 unpacking to docker.io/library/buildingedge-validation:0.2
+#15 unpacking to docker.io/library/buildingedge-validation:0.2 3.5s done
+#15 DONE 21.3s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/m7e23yc4z8g7jmy8tftpp9qc9

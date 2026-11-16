@@ -1,0 +1,23 @@
+Internal ctest changing into directory: /lab/build
+Test project /lab/build
+    Start 1: bms-core-tests
+1/1 Test #1: bms-core-tests ...................   Passed    0.00 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.00 sec
+{"drop_every": 0, "metrics": {"alarm_transitions": 4, "collector_errors": 0, "latency_sample_count": 80, "modbus_errors": 0, "poll_p50_us": 186, "poll_p95_us": 220, "poll_p99_us": 754, "poll_success": 80, "ring_evictions": 68, "validation_errors": 0}, "mode": "python", "rows": 80}
+{"drop_every": 7, "metrics": {"alarm_transitions": 4, "collector_errors": 0, "latency_sample_count": 69, "modbus_errors": 11, "poll_p50_us": 190, "poll_p95_us": 628, "poll_p99_us": 713, "poll_success": 69, "ring_evictions": 57, "validation_errors": 0}, "mode": "python", "rows": 69}
+{"drop_every": 0, "metrics": {"alarm_transitions": 4, "collector_errors": 0, "latency_sample_count": 80, "modbus_errors": 0, "poll_p50_us": 149, "poll_p95_us": 177, "poll_p99_us": 262, "poll_success": 80, "ring_evictions": 68, "validation_errors": 0}, "mode": "rust", "rows": 80}
+{"drop_every": 7, "metrics": {"alarm_transitions": 4, "collector_errors": 0, "latency_sample_count": 69, "modbus_errors": 11, "poll_p50_us": 149, "poll_p95_us": 372, "poll_p99_us": 389, "poll_success": 69, "ring_evictions": 57, "validation_errors": 0}, "mode": "rust", "rows": 69}
+test_bounded_history_and_replay (__main__.CollectorContract.test_bounded_history_and_replay) ... ok
+test_fragmented_http_and_method (__main__.CollectorContract.test_fragmented_http_and_method) ... ok
+test_health_empty_and_static_assets (__main__.CollectorContract.test_health_empty_and_static_assets) ... ok
+test_http_connection_limit_recovers (__main__.CollectorContract.test_http_connection_limit_recovers) ... ok
+test_invalid_frame_and_fragmented_ingest (__main__.CollectorContract.test_invalid_frame_and_fragmented_ingest) ... ok
+test_stale_uses_receipt_clock_not_sender_timestamp (__main__.CollectorContract.test_stale_uses_receipt_clock_not_sender_timestamp) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 3.662s
+
+OK

@@ -1,0 +1,334 @@
+ Image buildingedge-bms-review-gateway Building
+ Image buildingedge-bms-review-simulator Building
+ Image buildingedge-bms-review-collector Building
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.78kB 0.1s done
+#1 DONE 0.1s
+
+#2 [collector internal] load build definition from Dockerfile.rust
+#2 transferring dockerfile:
+#2 transferring dockerfile: 433B 0.0s done
+#2 DONE 1.2s
+
+#3 [gateway internal] load build definition from Dockerfile.cpp
+#3 ...
+
+#2 [collector internal] load build definition from Dockerfile.rust
+#2 DONE 1.2s
+
+#3 [gateway internal] load build definition from Dockerfile.cpp
+#3 transferring dockerfile: 613B done
+#3 DONE 4.2s
+
+#4 [simulator internal] load metadata for docker.io/library/debian:bookworm-slim
+#4 ...
+
+#5 [simulator internal] load metadata for docker.io/library/rust:1.85-bookworm
+#5 DONE 11.3s
+
+#6 [gateway internal] load metadata for docker.io/library/gcc:14-bookworm
+#6 DONE 8.3s
+
+#4 [gateway internal] load metadata for docker.io/library/debian:bookworm-slim
+#4 DONE 12.3s
+
+#7 [simulator internal] load .dockerignore
+#7 transferring context:
+#7 transferring context: 165B 0.0s done
+#7 DONE 2.3s
+
+#8 [collector  1/10] FROM docker.io/library/rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4
+#8 resolve docker.io/library/rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 1.1s done
+#8 CACHED
+
+#8 [simulator  1/10] FROM docker.io/library/rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4
+#8 resolve docker.io/library/rust:1.85-bookworm@sha256:e51d0265072d2d9d5d320f6a44dde6b9ef13653b035098febd68cce8fa7c0bc4 1.1s done
+#8 CACHED
+
+#9 [gateway internal] load build context
+#9 DONE 0.0s
+
+#10 [simulator internal] load build context
+#10 transferring context: 49.82kB 0.0s done
+#10 DONE 4.1s
+
+#11 [gateway stage-1 1/4] FROM docker.io/library/debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc
+#11 resolve docker.io/library/debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc
+#11 ...
+
+#10 [collector internal] load build context
+#10 DONE 4.1s
+
+#12 [gateway builder 1/6] FROM docker.io/library/gcc:14-bookworm@sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15
+#12 resolve docker.io/library/gcc:14-bookworm@sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15
+#12 ...
+
+#13 [simulator builder 2/5] WORKDIR /app/rust
+#13 CACHED
+
+#13 [collector builder 2/5] WORKDIR /app/rust
+#13 CACHED
+
+#14 [collector builder 3/5] COPY rust/ ./
+#14 ...
+
+#11 [simulator stage-1 1/4] FROM docker.io/library/debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc
+#11 resolve docker.io/library/debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc 12.2s done
+#11 resolve docker.io/library/debian:bookworm-slim@sha256:734a72b3d6142a71993b4bc580ca01d8ca687f77a2c422d96a961d3376b179bc 12.2s done
+#11 DONE 12.5s
+
+#14 [collector builder 3/5] COPY rust/ ./
+#14 ...
+
+#12 [gateway builder 1/6] FROM docker.io/library/gcc:14-bookworm@sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15
+#12 resolve docker.io/library/gcc:14-bookworm@sha256:5e927c284bf55a7dc796262e311a0703344f62f41f5621eb56843111b1d37e15 9.6s done
+#12 DONE 12.9s
+
+#14 [collector builder 3/5] COPY rust/ ./
+#14 DONE 8.5s
+
+#15 [simulator builder 4/5] COPY web/ /app/web/
+#15 ...
+
+#9 [gateway internal] load build context
+#9 transferring context:
+#9 transferring context: 22.15kB 0.0s done
+#9 DONE 28.4s
+
+#15 [collector builder 4/5] COPY web/ /app/web/
+#15 ...
+
+#16 [gateway builder 2/6] RUN apt-get update && apt-get install -y --no-install-recommends cmake && rm -rf /var/lib/apt/lists/*
+#16 CACHED
+
+#17 [gateway builder 3/6] WORKDIR /src
+#17 CACHED
+
+#18 [gateway builder 4/6] COPY CMakeLists.txt ./
+#18 CACHED
+
+#19 [gateway builder 5/6] COPY cpp/ ./cpp/
+#19 ...
+
+#15 [simulator builder 4/5] COPY web/ /app/web/
+#15 DONE 34.2s
+
+#15 [collector builder 4/5] COPY web/ /app/web/
+#15 DONE 34.2s
+
+#19 [gateway builder 5/6] COPY cpp/ ./cpp/
+#19 ...
+
+#20 [simulator builder 5/5] RUN cargo build --release --locked
+#20 ...
+
+#19 [gateway builder 5/6] COPY cpp/ ./cpp/
+#19 DONE 13.8s
+
+#20 [collector builder 5/5] RUN cargo build --release --locked
+#20 ...
+
+#21 [gateway builder 6/6] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" &&     cmake --build build --parallel 2 && ctest --test-dir build --output-on-failure
+#21 ...
+
+#20 [collector builder 5/5] RUN cargo build --release --locked
+#20 14.24    Compiling buildingedge-bms v0.2.0 (/app/rust)
+#20 15.38     Finished `release` profile [optimized] target(s) in 2.28s
+#20 DONE 17.9s
+
+#21 [gateway builder 6/6] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" &&     cmake --build build --parallel 2 && ctest --test-dir build --output-on-failure
+#21 ...
+
+#20 [collector builder 5/5] RUN cargo build --release --locked
+#20 DONE 17.9s
+
+#21 [gateway builder 6/6] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" &&     cmake --build build --parallel 2 && ctest --test-dir build --output-on-failure
+#21 ...
+
+#22 [gateway stage-1 2/4] RUN useradd --system --no-create-home bms
+#22 CACHED
+
+#22 [simulator stage-1 2/4] RUN useradd --system --no-create-home bms
+#22 CACHED
+
+#23 [collector stage-1 3/4] COPY --from=builder /app/rust/target/release/modbus-sim /usr/local/bin/modbus-sim
+#23 ...
+
+#21 [gateway builder 6/6] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" &&     cmake --build build --parallel 2 && ctest --test-dir build --output-on-failure
+#21 12.95 -- The CXX compiler identification is GNU 14.3.0
+#21 12.96 -- Detecting CXX compiler ABI info
+#21 13.77 -- Detecting CXX compiler ABI info - done
+#21 13.78 -- Check for working CXX compiler: /usr/local/bin/c++ - skipped
+#21 13.78 -- Detecting CXX compile features
+#21 13.78 -- Detecting CXX compile features - done
+#21 13.79 -- Configuring done
+#21 13.82 -- Generating done
+#21 13.82 -- Build files have been written to: /src/build
+#21 13.87 [ 28%] Building CXX object CMakeFiles/bms_core.dir/cpp/src/net.cpp.o
+#21 13.87 [ 28%] Building CXX object CMakeFiles/bms_core.dir/cpp/src/core.cpp.o
+#21 14.95 [ 42%] Linking CXX static library libbms_core.a
+#21 15.31 [ 42%] Built target bms_core
+#21 15.34 [ 57%] Building CXX object CMakeFiles/bms-core-tests.dir/cpp/tests/test_core.cpp.o
+#21 15.34 [ 71%] Building CXX object CMakeFiles/bms-edge.dir/cpp/src/main.cpp.o
+#21 16.17 [ 85%] Linking CXX executable bms-core-tests
+#21 16.64 [100%] Linking CXX executable bms-edge
+#21 ...
+
+#23 [simulator stage-1 3/4] COPY --from=builder /app/rust/target/release/modbus-sim /usr/local/bin/modbus-sim
+#23 DONE 7.7s
+
+#23 [collector stage-1 3/4] COPY --from=builder /app/rust/target/release/modbus-sim /usr/local/bin/modbus-sim
+#23 DONE 7.7s
+
+#21 [gateway builder 6/6] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" &&     cmake --build build --parallel 2 && ctest --test-dir build --output-on-failure
+#21 ...
+
+#24 [simulator stage-1 4/4] COPY --from=builder /app/rust/target/release/bms-collector /usr/local/bin/bms-collector
+#24 DONE 9.9s
+
+#21 [gateway builder 6/6] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" &&     cmake --build build --parallel 2 && ctest --test-dir build --output-on-failure
+#21 ...
+
+#24 [collector stage-1 4/4] COPY --from=builder /app/rust/target/release/bms-collector /usr/local/bin/bms-collector
+#24 DONE 9.9s
+
+#21 [gateway builder 6/6] RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON -DCMAKE_EXE_LINKER_FLAGS="-static-libstdc++ -static-libgcc" &&     cmake --build build --parallel 2 && ctest --test-dir build --output-on-failure
+#21 28.22 [100%] Built target bms-edge
+#21 28.22 [100%] Built target bms-core-tests
+#21 28.26 Internal ctest changing into directory: /src/build
+#21 28.26 Test project /src/build
+#21 28.26     Start 1: bms-core-tests
+#21 28.27 1/1 Test #1: bms-core-tests ...................   Passed    0.00 sec
+#21 28.27
+#21 28.27 100% tests passed, 0 tests failed out of 1
+#21 28.27
+#21 28.27 Total Test time (real) =   0.00 sec
+#21 DONE 30.8s
+
+#25 [simulator] exporting to image
+#25 exporting layers
+#25 ...
+
+#26 [collector] exporting to image
+#26 ...
+
+#27 [gateway stage-1 3/3] COPY --from=builder /src/build/bms-edge /usr/local/bin/bms-edge
+#27 DONE 8.3s
+
+#26 [collector] exporting to image
+#26 ...
+
+#28 [gateway] exporting to image
+#28 exporting layers
+#28 ...
+
+#26 [collector] exporting to image
+#26 exporting layers 25.1s done
+#26 exporting manifest sha256:c66ebb7df2f408ebee88e0bf9ad0ac657bfc881d4fefa657823374d891d07016
+#26 exporting manifest sha256:c66ebb7df2f408ebee88e0bf9ad0ac657bfc881d4fefa657823374d891d07016 3.2s done
+#26 exporting config sha256:746195bf8d0e399bb7d6257491f116d5cb227293d0bb41326684994e56c4110d
+#26 exporting config sha256:746195bf8d0e399bb7d6257491f116d5cb227293d0bb41326684994e56c4110d 2.8s done
+#26 ...
+
+#28 [gateway] exporting to image
+#28 exporting layers 21.9s done
+#28 exporting manifest sha256:a9015cd31c1a3b79af53e047155f2e5d188e012946e9484b8e7883e53a19d6db
+#28 ...
+
+#25 [simulator] exporting to image
+#25 exporting layers 25.0s done
+#25 exporting manifest sha256:e8e79fa7233d9fbc8aaf34a8c12c7c4d26b67b738efc3003227a33d7e737d8fc 3.3s done
+#25 exporting config sha256:39e4debad302f86038243eea3c2a7426a0564f08172cd071befa2b6178832827 2.9s done
+#25 exporting attestation manifest sha256:84e61cc30ee2630917d1a319aa1f0fa78bd845151ed3dfb4a752b99bdac26784
+#25 ...
+
+#26 [collector] exporting to image
+#26 exporting attestation manifest sha256:e0218e1567f495047d634777ed6009b5d1134226a069317c77aa5e2700985b46
+#26 exporting attestation manifest sha256:e0218e1567f495047d634777ed6009b5d1134226a069317c77aa5e2700985b46 3.3s done
+#26 exporting manifest list sha256:e7da193df2cd4e631bb6f0bc94030ec898a70e9f1b4ae3b4e292a03a11851d03
+#26 ...
+
+#25 [simulator] exporting to image
+#25 exporting attestation manifest sha256:84e61cc30ee2630917d1a319aa1f0fa78bd845151ed3dfb4a752b99bdac26784 4.5s done
+#25 exporting manifest list sha256:7aed30baefadacaa9d17d262a4415cd63698459073540c80cd6d8afb0d1aff50
+#25 exporting manifest list sha256:7aed30baefadacaa9d17d262a4415cd63698459073540c80cd6d8afb0d1aff50 4.3s done
+#25 naming to docker.io/library/buildingedge-bms-review-simulator:latest
+#25 naming to docker.io/library/buildingedge-bms-review-simulator:latest 0.4s done
+#25 unpacking to docker.io/library/buildingedge-bms-review-simulator:latest
+#25 ...
+
+#28 [gateway] exporting to image
+#28 exporting manifest sha256:a9015cd31c1a3b79af53e047155f2e5d188e012946e9484b8e7883e53a19d6db 3.5s done
+#28 exporting config sha256:0ee147d6bd73b6c2c927728d40da0a2565ab52885860cffa5cdcd08ea6f14390 2.9s done
+#28 exporting attestation manifest sha256:151c7e7d7babe06ccbc8fe7e5bdca31efb30b3d221192224f4135ee706873940 3.7s done
+#28 exporting manifest list sha256:1f18c2bd7b7efdc0434413ebc70fcb87a31253799801348dbd4f411a49c49640
+#28 ...
+
+#26 [collector] exporting to image
+#26 exporting manifest list sha256:e7da193df2cd4e631bb6f0bc94030ec898a70e9f1b4ae3b4e292a03a11851d03 2.7s done
+#26 naming to docker.io/library/buildingedge-bms-review-collector:latest 1.8s done
+#26 unpacking to docker.io/library/buildingedge-bms-review-collector:latest
+#26 ...
+
+#28 [gateway] exporting to image
+#28 exporting manifest list sha256:1f18c2bd7b7efdc0434413ebc70fcb87a31253799801348dbd4f411a49c49640 2.4s done
+#28 naming to docker.io/library/buildingedge-bms-review-gateway:latest
+#28 naming to docker.io/library/buildingedge-bms-review-gateway:latest 0.9s done
+#28 unpacking to docker.io/library/buildingedge-bms-review-gateway:latest
+#28 ...
+
+#26 [collector] exporting to image
+#26 unpacking to docker.io/library/buildingedge-bms-review-collector:latest 10.9s done
+#26 DONE 55.4s
+
+#28 [gateway] exporting to image
+#28 ...
+
+#25 [simulator] exporting to image
+#25 unpacking to docker.io/library/buildingedge-bms-review-simulator:latest 16.2s done
+#25 ...
+
+#28 [gateway] exporting to image
+#28 unpacking to docker.io/library/buildingedge-bms-review-gateway:latest 16.0s done
+#28 ...
+
+#25 [simulator] exporting to image
+#25 DONE 66.5s
+
+#28 [gateway] exporting to image
+#28 DONE 56.8s
+
+#29 [collector] resolving provenance for metadata file
+#29 ...
+
+#30 [gateway] resolving provenance for metadata file
+#30 DONE 1.3s
+
+#31 [simulator] resolving provenance for metadata file
+#31 DONE 2.0s
+
+#29 [collector] resolving provenance for metadata file
+#29 DONE 2.0s
+ Image buildingedge-bms-review-gateway Built
+ Image buildingedge-bms-review-simulator Built
+ Image buildingedge-bms-review-collector Built
+ Network buildingedge-bms-review_fieldnet Creating
+ Network buildingedge-bms-review_appnet Creating
+ Network buildingedge-bms-review_fieldnet Creating
+ Network buildingedge-bms-review_appnet Creating
+ Network buildingedge-bms-review_appnet Created
+ Network buildingedge-bms-review_appnet Created
+ Container buildingedge-bms-review-collector-1 Creating
+ Network buildingedge-bms-review_fieldnet Created
+ Network buildingedge-bms-review_fieldnet Created
+ Container buildingedge-bms-review-simulator-1 Creating
+ Container buildingedge-bms-review-collector-1 Created
+ Container buildingedge-bms-review-simulator-1 Created
+ Container buildingedge-bms-review-gateway-1 Creating
+ Container buildingedge-bms-review-gateway-1 Created
+ Container buildingedge-bms-review-collector-1 Starting
+ Container buildingedge-bms-review-simulator-1 Starting
+ Container buildingedge-bms-review-collector-1 Started
+ Container buildingedge-bms-review-simulator-1 Started
+ Container buildingedge-bms-review-gateway-1 Starting
+ Container buildingedge-bms-review-gateway-1 Started

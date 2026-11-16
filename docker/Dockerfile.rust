@@ -1,0 +1,11 @@
+FROM rust:1.85-bookworm AS builder
+WORKDIR /app/rust
+COPY rust/ ./
+COPY web/ /app/web/
+RUN cargo build --release --locked
+FROM debian:bookworm-slim
+RUN useradd --system --no-create-home bms
+COPY --from=builder /app/rust/target/release/modbus-sim /usr/local/bin/modbus-sim
+COPY --from=builder /app/rust/target/release/bms-collector /usr/local/bin/bms-collector
+USER bms
+CMD ["modbus-sim"]

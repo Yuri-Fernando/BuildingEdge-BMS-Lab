@@ -1,0 +1,24 @@
+{
+  "devices": [
+    {
+      "id": 1,
+      "seq": "9930",
+      "ts_ms": 1794850757256,
+      "temp_c": 22.5,
+      "co2_ppm": 1050,
+      "rh_pct": 45.4,
+      "occupied": true,
+      "hvac_on": true,
+      "co2_alarm": true,
+      "watts": 280,
+      "age_ms": 17,
+      "stale": false
+    }
+  ],
+  "accepted": 2481,
+  "rejected": 0,
+  "evicted": 1969,
+  "history_size": 512,
+  "capacity": 512,
+  "stale_after_ms": 3000
+}

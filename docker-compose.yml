@@ -1,0 +1,42 @@
+name: buildingedge-bms-lab
+x-runtime: &runtime
+  restart: unless-stopped
+  read_only: true
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  pids_limit: 160
+  mem_limit: 128m
+  cpus: 1.0
+  logging:
+    driver: json-file
+    options:
+      max-size: "5m"
+      max-file: "2"
+services:
+  simulator:
+    <<: *runtime
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rust
+    command: ["modbus-sim", "--bind", "0.0.0.0", "--port", "15020", "--drop-every", "0"]
+    networks: [fieldnet]
+  collector:
+    <<: *runtime
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.rust
+    command: ["bms-collector", "--bind", "0.0.0.0", "--ingest-port", "17001", "--http-port", "18080", "--capacity", "512"]
+    ports: ["127.0.0.1:18080:18080"]
+    networks: [appnet, managementnet]
+  gateway:
+    <<: *runtime
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.cpp
+    command: ["--host", "simulator", "--port", "15020", "--collector", "collector", "--collector-port", "17001", "--poll-ms", "100", "--rounds", "0", "--ring-capacity", "256"]
+    depends_on: [simulator, collector]
+    networks: [fieldnet, appnet]
+networks:
+  fieldnet: {internal: true}
+  appnet: {internal: true}
+  managementnet: {driver: bridge}

@@ -1,0 +1,11 @@
+FROM rust:1.85-bookworm AS validation
+RUN apt-get update && apt-get install -y --no-install-recommends cmake python3 && rm -rf /var/lib/apt/lists/*
+WORKDIR /lab
+COPY CMakeLists.txt ./
+COPY cpp/ cpp/
+COPY rust/ rust/
+COPY web/ web/
+COPY scripts/ scripts/
+RUN cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON && cmake --build build --parallel 2
+RUN cargo test --manifest-path rust/Cargo.toml --locked && cargo build --manifest-path rust/Cargo.toml --locked
+CMD ["sh", "-c", "ctest --test-dir build --output-on-failure && python3 scripts/integration.py --mode python && python3 scripts/integration.py --mode rust && python3 scripts/system_tests.py && python3 scripts/fault_tests.py"]
