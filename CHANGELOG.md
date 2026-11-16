@@ -1,5 +1,12 @@
 # Histórico de mudanças
 
+## Apresentação do repositório — 2026-11-16
+
+- Tópicos GitHub e descrição em português com status de desenvolvimento.
+- README alinhado à ordem e às seções do padrão de AWS Project, Industrial Control Lab e ReconPilot.
+- Inclusão de Visão de Longo Prazo, Histórico e Mudanças, Próximos Passos e Contexto / Observações.
+- Resultados e Evidências separados; registro do CI Linux/Windows já aprovado.
+
 ## 0.2.0 — 2026-11-16
 
 - IHM web servida pelo coletor Rust: visão geral, inventário, diagnósticos e contrato.

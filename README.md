@@ -3,6 +3,9 @@
 ### C++17 · Rust 2021 · Modbus TCP · Protocolo binário BMS1 · IHM Web · Prometheus · Grafana · Docker Compose
 
 [![CI](https://github.com/Yuri-Fernando/BuildingEdge-BMS-Lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Yuri-Fernando/BuildingEdge-BMS-Lab/actions/workflows/ci.yml)
+![status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow)
+![CI validado](https://img.shields.io/badge/CI-Linux%20%2B%20Windows%20aprovados-0a8a0a)
+![contratos](https://img.shields.io/badge/contratos-6%20coletor%20%C2%B7%207%20falhas-0a8a0a)
 ![C++](https://img.shields.io/badge/C%2B%2B-17-5c8ed6)
 ![Rust](https://img.shields.io/badge/Rust-2021-cb8c67)
 ![protocolo](https://img.shields.io/badge/BMS1-31_bytes-40b99c)
@@ -18,7 +21,7 @@
 
 ## Status
 
-**v0.2.0 — laboratório funcional validado localmente.** A aplicação possui três processos, uma IHM de quatro telas e uma suíte de contratos de rede. O relatório da execução atual está em [Evidências](docs/EVIDENCE.md). O código não controla equipamentos físicos.
+🟡 **Em desenvolvimento — MVP técnico funcional v0.2.0.** Núcleo validado em Docker e no [GitHub Actions, em Linux e Windows](https://github.com/Yuri-Fernando/BuildingEdge-BMS-Lab/actions/runs/43922538630). A aplicação possui três processos, uma IHM de quatro telas e uma suíte de contratos de rede. O relatório da execução atual está em [Evidências](docs/EVIDENCE.md). O código não controla equipamentos físicos.
 
 | Frente | Implementação | Verificação |
 |---|---|---|
@@ -28,6 +31,7 @@
 | IHM | Visão geral, dispositivos, diagnósticos e contrato | Navegação, responsividade, CSV e estados de falha |
 | Observabilidade | API de leitura, métricas Prometheus e dashboard Grafana | Evidências e comandos no manual operacional |
 | Empacotamento | Docker Compose com redes separadas, usuário sem privilégios e limites de recursos | Build e execução dos serviços |
+| CI hospedado | ✅ Três jobs aprovados: C++/sanitizers, Rust/integração Linux e Rust/contratos Windows | [Execução do commit b759568](https://github.com/Yuri-Fernando/BuildingEdge-BMS-Lab/actions/runs/43922538630) |
 | Limites do produto | Sem ACK, persistência, TLS, autenticação ou hardware real | Escopo documentado e roadmap técnico |
 
 ---
@@ -61,7 +65,7 @@ A revisão da v0.2 adicionou uma camada operacional: IHM, histórico consultáve
 
 ---
 
-## 🎯 Objetivos
+## 🎯 Objetivo
 
 - Coletar seis grandezas por Modbus TCP FC03 e validar todo o envelope antes de aceitar uma amostra.
 - Demonstrar comunicação binária C++ → Rust com contrato estável e limites compartilhados.
@@ -177,23 +181,67 @@ O gráfico mostra as últimas 120 amostras do dispositivo selecionado dentro do 
 
 **Exportar CSV** baixa o histórico consultado, com ID, sequência, timestamp, temperatura, CO₂, umidade, ocupação, HVAC, alarme e potência. A pausa interrompe as consultas; a validade continua expirando pelo tempo transcorrido.
 
-### Galeria
+---
 
-<p align="center">
-  <a href="docs/images/devices.png"><img src="docs/images/devices.png" width="48%" alt="Inventário real dos dispositivos"></a>
-  <a href="docs/images/diagnostics.png"><img src="docs/images/diagnostics.png" width="48%" alt="Diagnósticos com contadores do coletor"></a>
-  <br><sub>Inventário e diagnósticos.</sub>
-</p>
-<p align="center">
-  <a href="docs/images/protocol.png"><img src="docs/images/protocol.png" width="48%" alt="Tela de contrato Modbus e BMS1"></a>
-  <a href="docs/images/stale.png"><img src="docs/images/stale.png" width="48%" alt="Dados desatualizados após interrupção do gateway"></a>
-  <br><sub>Contrato e tratamento de perda da aquisição.</sub>
-</p>
-<p align="center">
-  <a href="docs/images/offline.png"><img src="docs/images/offline.png" width="48%" alt="Estado da IHM quando a API está indisponível"></a>
-  <a href="docs/images/mobile.png"><img src="docs/images/mobile.png" width="25%" alt="Visão geral em viewport móvel"></a>
-  <br><sub>Falha de API e apresentação responsiva.</sub>
-</p>
+## 🧠 Verificação / Modelagem
+
+### Reproduzir a suíte completa em Docker
+
+```bash
+docker build -f docker/Dockerfile.validation -t buildingedge-validation .
+docker run --rm buildingedge-validation
+```
+
+### Reproduzir por ferramenta
+
+```bash
+cargo fmt --manifest-path rust/Cargo.toml --check
+cargo clippy --manifest-path rust/Cargo.toml --all-targets -- -D warnings
+cargo test --manifest-path rust/Cargo.toml --locked
+
+ctest --test-dir build --output-on-failure
+python3 scripts/integration.py --mode python
+python3 scripts/integration.py --mode rust
+python3 scripts/system_tests.py
+python3 scripts/fault_tests.py
+```
+
+| Camada | O que verifica |
+|---|---|
+| CTest | Ring, histerese, backoff, Modbus, serialização, limites e percentis |
+| Cargo | Parser BMS1, rejeição de dados inválidos, replay, ring e liberação de permits |
+| Integração Python | C++ contra dois servidores TCP independentes: cenário normal e desconexões periódicas |
+| Integração Rust | C++ contra os serviços Rust reais, incluindo snapshot HTTP e métricas |
+| Contratos do coletor | Assets, API vazia, histórico limitado, replay, fragmentação, stale, métodos e recuperação de capacidade HTTP |
+| Falhas do gateway | TID, unidade, exceção, length, truncamento, grandeza inválida e resposta TCP fragmentada |
+| Browser | Navegação, busca, pausa, CSV, viewport móvel e apresentação dos estados atual/stale/offline |
+
+Para ASan/UBSan:
+
+```bash
+cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug -DBMS_SANITIZE=ON
+cmake --build build-asan --parallel 2
+ctest --test-dir build-asan --output-on-failure
+```
+
+Os logs e medições da revisão ficam em [docs/evidence](docs/evidence/). Os testes de capacidade verificam que os permits são recuperados; não equivalem a um benchmark de carga ou teste de resistência em produção.
+
+---
+
+## 🧪 Desenvolvimento Experimental
+
+A v0.2 foi organizada em revisão de contratos, mudanças no backend, IHM, testes de rede, build de containers e verificação visual.
+
+Achados tratados nesta revisão:
+
+- **Validação assimétrica:** o encoder C++ aceitava ID zero, sequência zero e potência acima de 50.000 W, enquanto o parser Rust rejeitava esses valores. Os limites foram alinhados e ganharam regressões.
+- **HTTP fragmentado:** uma única chamada `read` não garante receber a linha de requisição inteira. O coletor passou a acumular headers com limite de tamanho e deadline.
+- **Threads sem teto:** os servidores Rust criavam uma thread por conexão. Permits com liberação por RAII agora limitam a concorrência.
+- **Medição antiga sem validade explícita:** o snapshot ganhou idade de recebimento monotônica e a IHM passou a retirar dados vencidos dos indicadores atuais.
+- **Runtime C++ da imagem:** a compilação com GCC 14 e execução no Debian Bookworm exigiam atenção à versão da libstdc++. O executável da imagem passou a incluir o runtime C++ estaticamente.
+- **Acesso local no Docker:** as redes internas mantinham a aquisição ativa, mas não publicavam o HTTP no host neste ambiente. Foi adicionada uma rede bridge de supervisão; as portas continuam em 127.0.0.1.
+- **Execução do serviço:** o gateway tinha somente número finito de tentativas. `--rounds 0` passou a expressar execução contínua no Compose.
+- **Material de portfólio:** anotações pessoais, handoff, arquivos de auditoria antiga e ZIP foram preservados localmente e excluídos do versionamento.
 
 ---
 
@@ -211,7 +259,156 @@ O gráfico mostra as últimas 120 amostras do dispositivo selecionado dentro do 
 
 ---
 
-## ▶️ Como Rodar
+## 📊 Resultados
+
+| Verificação executada | Resultado | Origem |
+|---|---|---|
+| Contratos do núcleo C++ | 1 executável CTest aprovado, também com ASan/UBSan | Logs de validação e job cpp-linux |
+| Testes unitários Rust | 5 aprovados | Cargo e CI Linux/Windows |
+| Integração com sockets reais | 4 cenários: normal/falha × referência Python/serviços Rust | Testes finais |
+| Contratos externos do coletor | 6 aprovados | system_tests.py, incluindo Windows no CI |
+| Falhas do gateway | 7 aprovadas | fault_tests.py |
+| Cenário sem falhas | 80/80 leituras válidas, nos dois modos de integração | Logs de integração |
+| Desconexão a cada 7 requisições | 69 leituras válidas e 11 erros tratados por cenário | Logs de integração |
+| CI hospedado | 3/3 jobs aprovados | Execução b759568 |
+| Evidências visuais | 11 capturas reais | docs/images |
+| Exportação pela IHM | CSV com 512 amostras conferidas | telemetry-export.csv |
+
+O CTest agrupa seus asserts em um executável; os cenários de integração e os jobs de CI não são somados como se fossem testes unitários independentes. Percentis e ambiente estão no relatório de evidências.
+
+A revisão atual publica evidências separadas por camada em [docs/EVIDENCE.md](docs/EVIDENCE.md), com ambiente, comandos, resultados e limites. Nenhuma latência é tratada como SLA e nenhum resultado em container comprova operação em hardware de campo.
+
+Métricas produzidas pelo gateway:
+
+| Campo | Interpretação |
+|---|---|
+| `poll_success` | Leituras aceitas depois da validação |
+| `modbus_errors` | Erros de transporte ou envelope Modbus |
+| `validation_errors` | Respostas com grandezas inválidas |
+| `collector_errors` | Falhas percebidas pelo envio TCP |
+| `ring_evictions` | Observações removidas do buffer local |
+| `poll_p50_us / p95 / p99` | Percentis da janela de latências Modbus |
+| `latency_sample_count` | Quantidade de amostras usada nos percentis |
+
+Métricas do coletor incluem contadores de aceitação/rejeição/evicção, tamanho do histórico, dispositivos conhecidos e `bms_device_sample_age_seconds{device="…"}`.
+
+---
+
+## 🖼️ Evidências
+
+Capturas da aplicação executada com dados sintéticos percorrendo os três processos. A galeria inclui operação, dispositivos, diagnósticos, contrato, mobile, pausa, ausência de dados, aquisição interrompida, API indisponível e observabilidade.
+
+### Telas e estados operacionais
+
+<p align="center">
+  <a href="docs/images/devices.png"><img src="docs/images/devices.png" width="48%" alt="Inventário real dos dispositivos"></a>
+  <a href="docs/images/diagnostics.png"><img src="docs/images/diagnostics.png" width="48%" alt="Diagnósticos com contadores do coletor"></a>
+  <br><sub>Inventário e diagnósticos.</sub>
+</p>
+<p align="center">
+  <a href="docs/images/protocol.png"><img src="docs/images/protocol.png" width="48%" alt="Tela de contrato Modbus e BMS1"></a>
+  <a href="docs/images/stale.png"><img src="docs/images/stale.png" width="48%" alt="Dados desatualizados após interrupção do gateway"></a>
+  <br><sub>Contrato e tratamento de perda da aquisição.</sub>
+</p>
+<p align="center">
+  <a href="docs/images/offline.png"><img src="docs/images/offline.png" width="48%" alt="Estado da IHM quando a API está indisponível"></a>
+  <a href="docs/images/mobile.png"><img src="docs/images/mobile.png" width="25%" alt="Visão geral em viewport móvel"></a>
+  <br><sub>Falha de API e apresentação responsiva.</sub>
+</p>
+
+### Observabilidade
+
+<p align="center"><a href="docs/images/grafana.png"><img src="docs/images/grafana.png" width="75%" alt="Grafana com ingestão, retenção e idade da amostra"></a></p>
+<p align="center"><a href="docs/images/prometheus.png"><img src="docs/images/prometheus.png" width="75%" alt="Prometheus com alvo bms-collector em UP"></a></p>
+
+### Arquivos de evidência
+
+| Evidência | O que permite conferir |
+|---|---|
+| [Galeria completa](docs/images/README.md) | As 11 capturas reais, com contexto de cada estado |
+| [Relatório técnico](docs/EVIDENCE.md) | Ambiente, resultados, escopo e limites das medições |
+| [Testes finais](docs/evidence/final-validation-tests.log) | CTest, integração Python/Rust e contratos de rede |
+| [Falhas e sanitizers](docs/evidence/fault-sanitizer-tests.log) | Recuperação Modbus e ASan/UBSan |
+| [Verificação de browser](docs/evidence/browser-verification.md) | Navegação, busca, CSV, validade e mobile |
+| [Exportação CSV](docs/evidence/telemetry-export.csv) | 512 amostras sintéticas exportadas pela aplicação |
+| [CI publicado](https://github.com/Yuri-Fernando/BuildingEdge-BMS-Lab/actions/runs/43922538630) | Três jobs aprovados no GitHub |
+
+---
+
+## 🚀 Aplicações
+
+- Estudo de aquisição industrial/predial, telemetria e integração C++/Rust.
+- Demonstração de contratos binários, qualidade de dados e recuperação de falhas.
+- Base para ensaiar um coletor de edge antes de integrar dispositivos físicos.
+- Exercícios de observabilidade, testes de protocolo e diagnóstico de sistemas distribuídos.
+
+---
+
+## 🔭 Visão de Longo Prazo
+
+Evoluir de uma bancada de aquisição validada para uma plataforma experimental de edge predial com qualidade de dados rastreável, múltiplos dispositivos e recuperação explícita de falhas.
+
+A sequência técnica prioriza sessão e identidade do emissor, entrega com ACK e persistência, isolamento de links lentos e medição sob carga. A integração com hardware e novos protocolos deve vir acompanhada de fixtures, limites publicados e testes de conformidade adequados.
+
+```text
+aquisição e supervisão validadas
+  → sessão BMS2 e recuperação de reinício
+  → ACK, spool e deduplicação
+  → vários dispositivos com isolamento de falhas
+  → identidade, TLS e retenção durável
+  → adapters e validação em hardware identificado
+```
+
+Essa é a direção de desenvolvimento. Os itens seguintes permanecem planejados, com critérios de aceitação no roadmap.
+
+---
+
+## 🗺️ Roadmap
+
+| Evolução | Critério de aceitação |
+|---|---|
+| Sessão explícita em BMS2 | Reinício do gateway sem rejeitar indefinidamente a nova sequência; migração de contrato testada |
+| ACK e spool durável | Reconexão, duplicação, recuperação após crash e política de retenção verificadas |
+| Vários dispositivos em paralelo | Um link lento não bloqueia os demais; limites de CPU/RSS e p99 publicados |
+| Deadline completo de rede | DNS/connect/read/write com orçamento total e testes de destino indisponível |
+| Identidade e TLS | Autenticação por dispositivo, autorização e rotação de credenciais |
+| Fuzzing e carga | Corpus reproduzível, sanitizers e testes de saturação longa |
+| Adapters adicionais | BACnet/IP ou KNX com bibliotecas adequadas e fixtures de conformidade |
+| Hardware edge | Build e medições em plataforma identificada, sem extrapolar resultados do notebook |
+
+Detalhamento: [ROADMAP.md](ROADMAP.md).
+
+---
+
+## 🕓 Histórico e Mudanças
+
+| Versão / marco | Data | O que mudou |
+|---|---|---|
+| v0.1.0 — baseline | 14/11/2026 | Gateway C++17, mapa Modbus FC03, contrato BMS1, código dos serviços Rust, testes do núcleo e integração de referência Python |
+| v0.2.0 — operação e validação | 16/11/2026 | IHM com quatro telas, histórico/CSV, validade monotônica, limites de conexões, testes HTTP/TCP e falhas, Docker e observabilidade executados, 11 capturas e documentação técnica |
+| Publicação e apresentação | 16/11/2026 | Repositório público, CI aprovado em Linux/Windows, tópicos GitHub, status de desenvolvimento e alinhamento das seções ao padrão do portfólio |
+
+Histórico detalhado: [CHANGELOG.md](CHANGELOG.md). Achados, correções e pendências: [Revisão técnica](docs/QUALITY_REVIEW.md).
+
+---
+
+## 🔮 Próximos Passos
+
+**Concluído nesta versão:** pipeline C++ → Rust executado, interface e observabilidade conectadas a dados reais do laboratório, testes locais e CI hospedado aprovados, documentação e capturas publicadas.
+
+**Próximos técnicos:**
+
+1. Introduzir sessão explícita em BMS2 para recuperar reinícios do gateway sem conflito de sequência.
+2. Definir o contrato de ACK, spool durável e deduplicação antes de prometer recuperação de entrega.
+3. Implementar e testar orçamento global de DNS/connect/read/write.
+4. Medir CPU, RSS e p99 com vários dispositivos e links lentos isolados.
+5. Definir identidade, TLS e política de retenção antes de ampliar a exposição de rede.
+
+**Dependem de infraestrutura ou equipamento:** ensaios com dispositivos físicos, validação em plataforma edge identificada e adapters BACnet/KNX com fixtures apropriadas. Não são capacidades concluídas.
+
+---
+
+## ▶️ Como rodar localmente
 
 ### Opção recomendada: Docker Compose
 
@@ -285,124 +482,13 @@ docker compose -f docker-compose.yml -f docker-compose.observability.yml up -d -
 | Prometheus | [localhost:19090](http://localhost:19090) |
 | Grafana | [localhost:13000](http://localhost:13000) |
 
-<p align="center"><a href="docs/images/grafana.png"><img src="docs/images/grafana.png" width="70%" alt="Grafana com métricas reais de ingestão e idade da amostra"></a></p>
-Galeria completa das 11 capturas: [docs/images](docs/images/README.md).
-
 O Grafana provisiona o dashboard **BuildingEdge BMS · Collector Health** com ingestão, rejeição, evicções, quantidade de dispositivos, throughput e histórico. O acesso anônimo é somente de leitura; as portas ficam restritas ao loopback.
 
 O Docker Desktop pode não montar configurações diretamente de uma unidade virtual do Google Drive. Nesse caso, use um checkout em disco local para executar os containers e mantenha seu repositório original como fonte oficial.
 
 ---
 
-## 🧪 Verificação / Modelagem
-
-### Reproduzir a suíte completa em Docker
-
-```bash
-docker build -f docker/Dockerfile.validation -t buildingedge-validation .
-docker run --rm buildingedge-validation
-```
-
-### Reproduzir por ferramenta
-
-```bash
-cargo fmt --manifest-path rust/Cargo.toml --check
-cargo clippy --manifest-path rust/Cargo.toml --all-targets -- -D warnings
-cargo test --manifest-path rust/Cargo.toml --locked
-
-ctest --test-dir build --output-on-failure
-python3 scripts/integration.py --mode python
-python3 scripts/integration.py --mode rust
-python3 scripts/system_tests.py
-python3 scripts/fault_tests.py
-```
-
-| Camada | O que verifica |
-|---|---|
-| CTest | Ring, histerese, backoff, Modbus, serialização, limites e percentis |
-| Cargo | Parser BMS1, rejeição de dados inválidos, replay, ring e liberação de permits |
-| Integração Python | C++ contra dois servidores TCP independentes: cenário normal e desconexões periódicas |
-| Integração Rust | C++ contra os serviços Rust reais, incluindo snapshot HTTP e métricas |
-| Contratos do coletor | Assets, API vazia, histórico limitado, replay, fragmentação, stale, métodos e recuperação de capacidade HTTP |
-| Falhas do gateway | TID, unidade, exceção, length, truncamento, grandeza inválida e resposta TCP fragmentada |
-| Browser | Navegação, busca, pausa, CSV, viewport móvel e apresentação dos estados atual/stale/offline |
-
-Para ASan/UBSan:
-
-```bash
-cmake -S . -B build-asan -DCMAKE_BUILD_TYPE=Debug -DBMS_SANITIZE=ON
-cmake --build build-asan --parallel 2
-ctest --test-dir build-asan --output-on-failure
-```
-
-Os logs e medições da revisão ficam em [docs/evidence](docs/evidence/). Os testes de capacidade verificam que os permits são recuperados; não equivalem a um benchmark de carga ou teste de resistência em produção.
-
----
-
-## 📊 Resultados e Evidências
-
-A revisão atual publica evidências separadas por camada em [docs/EVIDENCE.md](docs/EVIDENCE.md), com ambiente, comandos, resultados e limites. Nenhuma latência é tratada como SLA e nenhum resultado em container comprova operação em hardware de campo.
-
-Métricas produzidas pelo gateway:
-
-| Campo | Interpretação |
-|---|---|
-| `poll_success` | Leituras aceitas depois da validação |
-| `modbus_errors` | Erros de transporte ou envelope Modbus |
-| `validation_errors` | Respostas com grandezas inválidas |
-| `collector_errors` | Falhas percebidas pelo envio TCP |
-| `ring_evictions` | Observações removidas do buffer local |
-| `poll_p50_us / p95 / p99` | Percentis da janela de latências Modbus |
-| `latency_sample_count` | Quantidade de amostras usada nos percentis |
-
-Métricas do coletor incluem contadores de aceitação/rejeição/evicção, tamanho do histórico, dispositivos conhecidos e `bms_device_sample_age_seconds{device="…"}`.
-
----
-
-## 🧪 Desenvolvimento Experimental
-
-A v0.2 foi organizada em revisão de contratos, mudanças no backend, IHM, testes de rede, build de containers e verificação visual.
-
-Achados tratados nesta revisão:
-
-- **Validação assimétrica:** o encoder C++ aceitava ID zero, sequência zero e potência acima de 50.000 W, enquanto o parser Rust rejeitava esses valores. Os limites foram alinhados e ganharam regressões.
-- **HTTP fragmentado:** uma única chamada `read` não garante receber a linha de requisição inteira. O coletor passou a acumular headers com limite de tamanho e deadline.
-- **Threads sem teto:** os servidores Rust criavam uma thread por conexão. Permits com liberação por RAII agora limitam a concorrência.
-- **Medição antiga sem validade explícita:** o snapshot ganhou idade de recebimento monotônica e a IHM passou a retirar dados vencidos dos indicadores atuais.
-- **Runtime C++ da imagem:** a compilação com GCC 14 e execução no Debian Bookworm exigiam atenção à versão da libstdc++. O executável da imagem passou a incluir o runtime C++ estaticamente.
-- **Acesso local no Docker:** as redes internas mantinham a aquisição ativa, mas não publicavam o HTTP no host neste ambiente. Foi adicionada uma rede bridge de supervisão; as portas continuam em 127.0.0.1.
-- **Execução do serviço:** o gateway tinha somente número finito de tentativas. `--rounds 0` passou a expressar execução contínua no Compose.
-- **Material de portfólio:** anotações pessoais, handoff, arquivos de auditoria antiga e ZIP foram preservados localmente e excluídos do versionamento.
-
----
-
-## 🚀 Aplicações
-
-- Estudo de aquisição industrial/predial, telemetria e integração C++/Rust.
-- Demonstração de contratos binários, qualidade de dados e recuperação de falhas.
-- Base para ensaiar um coletor de edge antes de integrar dispositivos físicos.
-- Exercícios de observabilidade, testes de protocolo e diagnóstico de sistemas distribuídos.
-
----
-
-## 🗺️ Roadmap
-
-| Evolução | Critério de aceitação |
-|---|---|
-| Sessão explícita em BMS2 | Reinício do gateway sem rejeitar indefinidamente a nova sequência; migração de contrato testada |
-| ACK e spool durável | Reconexão, duplicação, recuperação após crash e política de retenção verificadas |
-| Vários dispositivos em paralelo | Um link lento não bloqueia os demais; limites de CPU/RSS e p99 publicados |
-| Deadline completo de rede | DNS/connect/read/write com orçamento total e testes de destino indisponível |
-| Identidade e TLS | Autenticação por dispositivo, autorização e rotação de credenciais |
-| Fuzzing e carga | Corpus reproduzível, sanitizers e testes de saturação longa |
-| Adapters adicionais | BACnet/IP ou KNX com bibliotecas adequadas e fixtures de conformidade |
-| Hardware edge | Build e medições em plataforma identificada, sem extrapolar resultados do notebook |
-
-Detalhamento: [ROADMAP.md](ROADMAP.md).
-
----
-
-## 📁 Estrutura
+## 📁 Estrutura do repositório
 
 ```text
 BuildingEdge-BMS-Lab/
@@ -440,6 +526,7 @@ BuildingEdge-BMS-Lab/
 | [Requisitos](docs/REQUIREMENTS.md) | Requisitos técnicos rastreados a código e testes |
 | [Operação](docs/OPERATIONS.md) | Inicialização, falhas, recuperação e diagnóstico |
 | [Guia de estudo](docs/CODE_GUIDE.md) | Organização do código e roteiro para reproduzir |
+| [Revisão técnica](docs/QUALITY_REVIEW.md) | Diagnóstico, correções e pendências priorizadas |
 | [Pesquisa](docs/RESEARCH.md) | Fontes oficiais e decisões derivadas |
 | [Evidências](docs/EVIDENCE.md) | Resultados e contexto de validação |
 | [Segurança e limites](docs/SECURITY.md) | Modelo de exposição e pendências |
@@ -462,6 +549,20 @@ BuildingEdge-BMS-Lab/
 
 ---
 
+## Status
+
+🟡 **Em desenvolvimento — MVP técnico funcional v0.2.0.** Aquisição Modbus, gateway C++17, serviços Rust, IHM e observabilidade verificados em laboratório, com CI aprovado em Linux e Windows. Pendentes: sessão de emissor, entrega durável, autenticação/TLS, carga prolongada e hardware real.
+
+---
+
+## Contexto / Observações
+
+Projeto independente de portfólio e pesquisa aplicada em software de automação predial. Dados, ocupação e estados de HVAC são sintéticos; não há instalação comercial, integração de fabricante ou certificação demonstrada.
+
+As métricas descrevem execuções identificadas de laboratório. O alarme de CO₂ é uma regra informativa sem atuação automática. Notas pessoais e material de planejamento não integram a publicação.
+
+---
+
 ## 🔗 Projetos Relacionados
 
 | Projeto | Relação |
@@ -481,6 +582,8 @@ Engenharia Elétrica · Ciência da Computação · Inteligência Artificial · 
 [LinkedIn](https://www.linkedin.com/in/yuridubbern) · [GitHub](https://github.com/Yuri-Fernando) · [Lattes](http://lattes.cnpq.br/7151392692642166) · [Linktree](https://linktr.ee/yuri.f.dubbern)
 
 Desenvolvido com assistência de IA, revisão de código, testes e evidências documentados. Projeto independente de portfólio.
+
+---
 
 ## Licença
 

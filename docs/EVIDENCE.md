@@ -25,7 +25,7 @@ Data da revisão: **16/11/2026**. Fonte oficial: pasta BuildingEdge BMS Lab no G
 | rustfmt / Clippy | Sem warnings após correções | verificação local; gate também no CI |
 | Stack Compose | 3 serviços iniciados | compose-build.log |
 | Navegação e capturas da IHM | Verificadas no browser desktop e móvel | images/ e relatório de browser |
-| CI hospedado | Acompanhar commit publicado | workflow GitHub Actions |
+| CI hospedado | ✅ 3/3 jobs aprovados: C++/sanitizers Linux, Rust/integração Linux e Rust/contratos Windows | [Execução b759568](https://github.com/Yuri-Fernando/BuildingEdge-BMS-Lab/actions/runs/43922538630) |
 
 Os testes de unidade C++ estão agrupados em um executável CTest; não são apresentados como dezenas de casos independentes.
 
